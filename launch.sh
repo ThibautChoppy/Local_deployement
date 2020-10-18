@@ -44,7 +44,7 @@ function start_ansible {
   esac
 }
 
-while getopts ":b:hv" option
+while getopts ":hv" option
 do
  case $option in
     v) ((Mode=Mode+1)) ;;
@@ -58,7 +58,7 @@ done
 display_center $normal "Starting Script" $normal
 
 display_center $yellow "Update and upgrade System" $yellow
-sudo apt -y update && sudo apt -y upgrade
+sudo apt update -y && sudo apt upgrade -y
 
 display_center $yellow "Installation of Ansible" $yellow
 sudo apt install ansible
