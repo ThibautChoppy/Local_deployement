@@ -1,0 +1,102 @@
+---
+
+    - name: Get ZSH installation script
+      shell: |
+        curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh > oh-my-zsh.sh
+        sed -i "s:env zsh:exit:g" oh-my-zsh.sh
+        chmod 755 oh-my-zsh.sh
+
+    - name: Installation of ZSH
+      shell: |
+        nohup ./oh-my-zsh.sh $
+        rm oh-my-zsh.sh
+
+    - name: Setting up ZSH as default shell
+      user:
+        name: "{{ username.stdout }}"
+        shell: /usr/bin/zsh
+      become: yes
+
+    - name: Configuration of FontCache
+      shell: |
+        wget https://github.com/powerline/powerline/raw/develop/font/PowerlineSymbols.otf
+        wget https://github.com/powerline/powerline/raw/develop/font/10-powerline-symbols.conf
+        mkdir /home/"{{ username.stdout }}"/.fonts/
+        mv PowerlineSymbols.otf /home/"{{ username.stdout }}"/.fonts/
+        mkdir -p /home/"{{ username.stdout }}"/.config/fontconfig/conf.d
+        fc-cache -vf /home/"{{ username.stdout }}"/.fonts/
+        mv 10-powerline-symbols.conf /home/"{{ username.stdout }}"/.config/fontconfig/conf.d/
+
+    - name: Configuration of Poweroff and Reboot
+      shell: |
+        chmod +s /sbin/poweroff
+        chmod +s /sbin/reboot
+      become: true
+
+    - name: Creation of configuration folders
+      block:
+        - file:
+            path: /home/{{ username.stdout }}/.config/autostart
+            state: directory
+        - file:
+            path: /home/{{ username.stdout }}/.config/terminator
+            state: directory
+
+    - name: Copy of configuration file
+      block:
+        - copy:
+            src: conkyrc
+            dest: /home/{{ username.stdout }}/.conkyrc
+            owner: "{{ username.stdout }}"
+            group: "{{ username.stdout }}"
+            mode: u=rw,g=r,o=r
+        - copy:
+            src: zshrc
+            dest: /home/{{ username.stdout }}/.zshrc
+            owner: "{{ username.stdout }}"
+            group: "{{ username.stdout }}"
+            mode: u=rw,g=rw,o=r
+        - copy:
+            src: conkyLaunch
+            dest: /home/{{ username.stdout }}/.config/autostart/conky-launch.desktop
+            owner: "{{ username.stdout }}"
+            group: "{{ username.stdout }}"
+            mode: u=rw,g=r,o=r
+        - copy:
+            src: terminatorConfig
+            dest: /home/{{ username.stdout }}/.config/terminator/config
+            owner: "{{ username.stdout }}"
+            group: "{{ username.stdout }}"
+            mode: u=rw,g=r,o=r
+
+    - name: Configuration of zshrc with the username
+      replace:
+        path: "~/.zshrc"
+        regexp: "username"
+        replace: "{{ username.stdout }}"
+
+    - name: Configuration of Conky
+      replace:
+        path: "~/.conkyrc"
+        regexp: "eth0"
+        replace: "{{ ansible_default_ipv4.interface }}"
+
+    - name: Authorize port 1716:1764 for gsconnect and port 22 for SSH
+      block:
+        - ufw:
+            rule: allow
+            port: '1716:1764'
+            proto: '{{ item }}'
+          with_items:
+            - tcp
+            - udp
+        - ufw:
+            rule: allow
+            port: 22
+      become: yes
+
+    - name: Clean unused packages
+      apt:
+        autoremove: yes
+        purge: yes
+      become: yes

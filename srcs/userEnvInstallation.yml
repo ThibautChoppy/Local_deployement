@@ -1,0 +1,30 @@
+---
+
+    - name: Installation of user environment
+      block:
+        - name: Installation of User's and Multimedia Softwares
+          apt:
+            name: "{{ params.userSoftware }}"
+            state: present
+          when: params.userSoftware is defined and params.userSoftware | length > 0
+        - name: Installation of Snap Software
+          snap:
+            name: "{{ params.snap }}"
+            classic: yes
+          when: params.snap is defined and params.snap | length > 0
+        - name: Installation of Teamviewer
+          apt:
+            deb: https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
+        - name: Installation of Microsoft Team
+          apt:
+            deb: https://go.microsoft.com/fwlink/p/?LinkID=2112886&clcid=0x409&culture=en-us&country=US
+      become: true
+
+    - name: Generate new SSH Key
+      openssh_keypair:
+        path: "~/.ssh/id_rsa"
+        type: rsa
+        size: 4096
+        state: present
+        force: no
+      when: sshKey == "yes"

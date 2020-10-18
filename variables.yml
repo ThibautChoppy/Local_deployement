@@ -1,0 +1,6 @@
+---
+
+  devTools: ['gcc', 'build-essential', 'valgrind', 'libncurses5', 'curl', 'openssh-server', 'net-tools']
+  userTools: ['zsh', 'terminator', 'tree', 'git', 'glances', 'conky-all', 'gnome-tweak-tool', 'gnome-shell-extension-gsconnect', 'gnome-shell-extension-gsconnect-browsers']
+  userSoftware: ['glances', 'firefox', 'filezilla', 'lollypop', 'easytag', 'soundconverter', 'vlc', 'qbittorrent', 'gimp', 'onedrive', 'remmina']
+  snap: ['discord', 'spotify', 'intellij-idea-ultimate', 'moonlight']

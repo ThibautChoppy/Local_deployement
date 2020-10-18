@@ -1,0 +1,26 @@
+---
+
+- hosts: localhost
+  become_method: sudo
+
+  vars_prompt:
+    - name: sshKey
+      prompt: "Do you need a new SSH-Key ? (yes/no)"
+      private: no
+      default: "no"
+
+  tasks:
+    - name: Include variables
+      include_vars:
+        file: variables.yml
+        name: params
+      vars:
+        username:
+
+    - name: Get username
+      local_action: command whoami
+      register: username
+
+    - include: ./srcs/devEnvInstallation.yml
+    - include: ./srcs/userEnvInstallation.yml
+    - include: ./srcs/configuration.yml

@@ -1,0 +1,15 @@
+---
+
+    - name: Installation of Env
+      block:
+        - name: Installation of the development environnement
+          apt:
+            name: "{{ params.devTools }}"
+            state: present
+          when: params.devTools is defined and params.devTools | length > 0
+        - name: Installation of the user tools
+          apt:
+            name: "{{ params.userTools }}"
+            state: present
+          when: params.userTools is defined and params.userTools | length > 0
+      become: true
