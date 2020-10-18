@@ -1,0 +1,84 @@
+--[[	Minimalis Conky 1.2.2 -- tested on Ubuntu 20.04 (Gnome Shell Desktop)
+    	Author : Thibaut
+    	Release date : Aout, 18 2020
+    	Email : thibaut.choppy@epitech.eu
+                    	Feel free to modity this script ;)
+]]
+
+conky.config = {
+	update_interval = 0.5,
+	cpu_avg_samples = 2,
+	net_avg_samples = 2,
+	out_to_console = false,
+	override_utf8_locale = true,
+	double_buffer = true,
+	no_buffers = true,
+	text_buffer_size = 32768,
+	imlib_cache_size = 0,
+	own_window = true,
+	own_window_type = 'normal',
+	own_window_argb_visual = true,
+	own_window_argb_value = 50,
+	own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+	border_inner_margin = 5,
+	border_outer_margin = 0,
+	xinerama_head = 1,
+	alignment = 'bottom_right',
+	gap_x = 10,
+	gap_y = 35,
+	draw_shades = false,
+	draw_outline = false,
+	draw_borders = false,
+	draw_graph_borders = false,
+	use_xft = true,
+	--font = 'ConkySymbols',
+	xftalpha = 0.8,
+	uppercase = false,
+	default_color = 'white',
+	own_window_colour = '#000000',
+	minimum_width = 450, minimum_height = 0,
+	alignment = 'top_right',
+};
+
+conky.text = [[
+${font sans-serif:bold:size=12}SYSTEM ${hr 2}
+${font sans-serif:bold:size=9}Kernel: $alignr $kernel
+${font sans-serif:normal:size=9}Uptime: $alignr $uptime_short
+
+${font sans-serif:bold:size=12}CPU ${hr 2}
+${font sans-serif:normal:size=9}${execi 1000 grep model /proc/cpuinfo | cut -d : -f2 | tail -1 | sed 's/\s//'}
+${font sans-serif:normal:size=10}${color fbbb13}${cpugraph cpu0 40,450 fbbb13 fbbb13 -0.5 -l}$color
+${if_match ${cpu cpu0}<=40} ${color green} ${else}\
+${if_match ${cpu cpu0}<=75} ${color orange} ${else}\
+${color red} ${endif}${endif} ${cpu cpu0}% ${cpubar cpu0} $color
+
+${font sans-serif:bold:size=12}MEMORY ${hr 2}
+${font sans-serif:normal:size=9}RAM $alignc $mem / $memmax $alignr $memperc%
+$membar
+SWAP $alignc ${swap} / ${swapmax} $alignr ${swapperc}%
+${swapbar}
+
+${font sans-serif:bold:size=12}DISK USAGE ${hr 2}
+${font sans-serif:normal:size=10}/ $alignc ${fs_used /} / ${fs_size /} $alignr ${fs_used_perc /}%
+${fs_bar /}
+
+${font Ubuntu:bold:size=12}NETWORK ${hr 2}
+${font sans-serif:normal:size=10}Local IPs:${alignr}External IP:
+${font sans-serif:bold:size=9}${color fbbb13}${execi 1000 ip a | grep inet | grep -vw lo | grep -v inet6 | cut -d \/ -f1 | grep 192 | cut -b 10- }  ${alignr}${execi 1000  wget -q -O- http://ipecho.net/plain; echo}$color
+${font sans-serif:bold:size=10}Down: ${color fb5d2c}${downspeed eth0}$color  ${alignr}Up: ${color 73d72d}${upspeed eth0}
+${color fb5d2c}${downspeedgraph eth0 80,205 } ${alignr}${color 73d72d}${upspeedgraph eth0 80,205 }$color
+${voffset -10} ${font sans-serif:bold:size=12}TOP PROCESSES ${hr 2}
+${font sans-serif:bold:size=10}Name $alignr PID    CPU   MEM${font sans-serif:normal:size=9}
+${top name 1} $alignr ${top pid 1} ${top cpu 1}% ${top cpu 1}%
+${top name 2} $alignr ${top pid 2} ${top cpu 2}% ${top cpu 2}%
+${top name 3} $alignr ${top pid 3} ${top cpu 3}% ${top cpu 3}%
+${top name 4} $alignr ${top pid 4} ${top cpu 4}% ${top cpu 4}%
+${top name 5} $alignr ${top pid 5} ${top cpu 5}% ${top cpu 5}%
+$stippled_hr
+${top name 6} $alignr ${top pid 6} ${top cpu 6}% ${top mem 1}%
+${top name 7} $alignr ${top pid 7} ${top cpu 7}% ${top mem 2}%
+${top name 8} $alignr ${top pid 8} ${top cpu 8}% ${top mem 3}%
+${top name 9} $alignr ${top pid 9} ${top cpu 9}% ${top mem 4}%
+${top name 10} $alignr ${top pid 10} ${top cpu 10}% ${top mem 5}%
+${font sans-serif:bold:size=8} $alignr Total ${execi 1000 ps aux | wc -l}
+]];

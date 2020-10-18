@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Conky
+Exec=/usr/bin/conky
+TryExec=conky
+Type=Application
